@@ -1,15 +1,17 @@
 import React, { memo } from 'react'
 import { MenuToggle } from './MenuToggle'
+import { Link } from 'react-router-dom'
 
 export function NavigationBar() {
   return <div style={{
     display: 'flex',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     height: '34em',
     backgroundColor: 'aqua',
   }}
   >
-    Navigation Bar
+    <p><Link to="/">Home</Link></p>
+    <p><Link to="/template">Templates</Link></p>
   </div>
 }
 
@@ -21,17 +23,17 @@ type Props = {
 export const NavigationControl = memo(function NavigationControl(props: Props) {
   const { expanded } = props
   return <div style={{
-      display: 'flex',
-      justifyContent: 'end',
-      height: '4em',
-      backgroundColor: 'salmon',
-    }}
+    display: 'flex',
+    justifyContent: 'end',
+    height: '4em',
+    backgroundColor: 'salmon',
+  }}
   >
     <div
       title={expanded ? 'Close' : 'Open'}
       onClick={() => props.toggle(!expanded)}
     >
-      <MenuToggle expanded={expanded} />
+      <MenuToggle expanded={expanded}/>
     </div>
   </div>
 })
