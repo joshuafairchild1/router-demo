@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import { DefaultLayout } from './layout/DefaultLayout'
+import { NavigationBar, NavigationControl, SiteControl } from './layout/NavigationBar'
+import { SidePanel } from './layout/SidePanel'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [isNavOpen, setIsNavOpen] = useState(false)
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false)
+  return <DefaultLayout
+    main={<div>Main Content</div>}
+    isNavOpen={isNavOpen}
+    navigation={{
+      content: <NavigationBar/>,
+      siteControl: <SiteControl/>,
+      navigationControl: <NavigationControl expanded={isNavOpen} toggle={setIsNavOpen}/>,
+    }}
+    sidePanel={<SidePanel sidePanelIsOpen={isSidePanelOpen} setSidePanelIsOpen={setIsSidePanelOpen}/>}
+    header={<div>Header</div>}
+    footer={<div>Footer</div>}
+    siteNotice={<div>Site Notice</div>}
+    sidePanelIsOpen={isSidePanelOpen}
+  />
 }
 
-export default App;
+export default App
