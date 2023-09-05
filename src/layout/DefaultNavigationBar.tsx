@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { MenuToggle } from './MenuToggle'
 import { Link } from 'react-router-dom'
 
-export function NavigationBar() {
+export function DefaultNavigationBar() {
   return <div style={{
     display: 'flex',
     flexDirection: 'column',
