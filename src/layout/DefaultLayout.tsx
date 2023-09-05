@@ -1,4 +1,4 @@
-import { percent, px } from 'csx'
+import { percent, px, viewHeight } from 'csx'
 import React from 'react'
 import { LayoutProps } from './LayoutProps'
 import { classes, stylesheet } from 'typestyle'
@@ -98,6 +98,7 @@ function getLayoutClass(props: DefaultLayoutProps): LayoutClasses {
 
 const css = stylesheet({
   Base: {
+    height: viewHeight(100),
     position: 'absolute',
     overflow: 'hidden',
     top: 0,
@@ -158,10 +159,9 @@ const css = stylesheet({
     gridArea: 'siteControl',
   },
   Content: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr auto',
+    height: percent(100),
     transition: 'padding-left 200ms ease 0s',
     paddingLeft: px(300),
     '&[data-nav-open="false"]': {

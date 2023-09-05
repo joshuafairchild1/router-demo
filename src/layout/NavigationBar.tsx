@@ -1,8 +1,7 @@
-import React, { memo } from 'react'
+import React, { memo, PropsWithChildren } from 'react'
 import { MenuToggle } from './MenuToggle'
-import { Link } from 'react-router-dom'
 
-export function DefaultNavigationBar() {
+export function NavigationBar(props: PropsWithChildren<{}>) {
   return <div style={{
     display: 'flex',
     flexDirection: 'column',
@@ -10,8 +9,7 @@ export function DefaultNavigationBar() {
     backgroundColor: 'aqua',
   }}
   >
-    <p><Link to="/">Home</Link></p>
-    <p><Link to="/template">Templates</Link></p>
+    {props.children}
   </div>
 }
 

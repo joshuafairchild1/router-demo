@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { DefaultLayout } from './layout/DefaultLayout'
-import { DefaultNavigationBar, NavigationControl, SiteControl } from './layout/DefaultNavigationBar'
+import { NavigationBar, NavigationControl, SiteControl } from './layout/NavigationBar'
 import { SidePanel } from './layout/SidePanel'
 import { createBrowserRouter, Link, RouterProvider, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorPage } from './ErrorPage'
@@ -50,6 +50,9 @@ function PlanDashboard() {
       <p><Link to="/plan/2">Plan 2</Link></p>
       <p><Link to="/plan/3">Plan 3</Link></p>
     </div>}
+    sidePanel={<div>
+      <p>Plan Dashboard Side Panel</p>
+    </div>}
   />
 }
 
@@ -59,6 +62,13 @@ function TemplateDashboard() {
       <p><Link to="/template/1">Template 1</Link></p>
       <p><Link to="/template/2">Template 2</Link></p>
       <p><Link to="/template/3">Template 3</Link></p>
+    </div>}
+    navigation={<div>
+      <p>Custom Template Navigation Bar!</p>
+      <Link to="/">Home</Link>
+    </div>}
+    sidePanel={<div>
+      <p>Template Dashboard Side Panel</p>
     </div>}
   />
 }
@@ -70,6 +80,9 @@ function PlanDetail() {
       <p>Plan Detail</p>
       <pre>{JSON.stringify(params, null, 2)}</pre>
     </div>}
+    sidePanel={<div>
+      <p>Plan Detail Side Panel</p>
+    </div>}
   />
 }
 
@@ -80,11 +93,16 @@ function TemplateDetail() {
       <p>Template Detail</p>
       <pre>{JSON.stringify(params, null, 2)}</pre>
     </div>}
+    sidePanel={<div>
+      <p>Template Detail Panel</p>
+    </div>}
   />
 }
 
 type ScreenProps = {
   main: React.ReactNode
+  navigation?: React.ReactNode
+  sidePanel?: React.ReactNode
 }
 
 function DefaultApplicationScreen(props: ScreenProps) {
@@ -119,14 +137,31 @@ function DefaultApplicationScreen(props: ScreenProps) {
     main={props.main}
     isNavOpen={isNavOpen}
     navigation={{
-      content: <DefaultNavigationBar/>,
+      // nav bar contents support overrides
+      content: <NavigationBar>
+        {props.navigation ?? <DefaultNavigationBar/>}
+      </NavigationBar>,
+      // controls do not support overrides
       siteControl: <SiteControl/>,
       navigationControl: <NavigationControl expanded={isNavOpen} toggle={setIsNavOpen}/>,
     }}
-    sidePanel={<SidePanel sidePanelIsOpen={isSidePanelOpen} setSidePanelIsOpen={setIsSidePanelOpen}/>}
+    sidePanelIsOpen={isSidePanelOpen}
+    sidePanel={props.sidePanel
+      ? <SidePanel sidePanelIsOpen={isSidePanelOpen} setSidePanelIsOpen={setIsSidePanelOpen}>
+          {props.sidePanel}
+        </SidePanel>
+      : undefined}
+    // header (?), footer, and site notice are the same for all screens, no overrides
     header={<div>Header</div>}
     footer={<div>Footer</div>}
     siteNotice={<div>Site Notice</div>}
-    sidePanelIsOpen={isSidePanelOpen}
   />
+}
+
+function DefaultNavigationBar() {
+  return <NavigationBar>
+    <p>Default Navigation Bar</p>
+    <p><Link to="/">Home</Link></p>
+    <p><Link to="/template">Templates</Link></p>
+  </NavigationBar>
 }
