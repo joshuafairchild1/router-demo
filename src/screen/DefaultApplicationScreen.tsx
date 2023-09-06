@@ -81,7 +81,7 @@ export function DefaultApplicationScreen<T extends RouteDefinition>(props: Props
     // header (?), footer, and site notice are the same for all screens, no overrides
     header={<div>Static header</div>}
     footer={<div>Static footer</div>}
-    siteNotice={<div>Static site</div>}
+    siteNotice={<div>Static site notice</div>}
   />
 }
 
