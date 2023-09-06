@@ -8,9 +8,16 @@ import { createElement } from 'react'
 import _ from 'lodash'
 import { createRouteAlias } from './createRouteAlias'
 
-export type RouteName = keyof typeof routeDefinitionsLookup
+export type RouteName = keyof typeof routes
 
-const routeDefinitionsLookup = {
+export type RouteDefinition =
+  & Omit<RouteObject, 'path'>
+  & Required<Pick<RouteObject, 'path'>>
+  & {
+    supportedPanels?: string[]
+  }
+
+export const routes = {
   plans: {
     path: '/',
     Component: PlanDashboardScreen,
@@ -23,14 +30,16 @@ const routeDefinitionsLookup = {
   planDetail: {
     path: '/plan/:planId',
     Component: PlanDetailScreen,
+    supportedPanels: ['milestone', 'profile']
   },
   templateDetail: {
     path: '/template/:templateId',
     Component: TemplateDetailScreen,
+    supportedPanels: ['milestone']
   },
-} satisfies Record<string, RouteObject>
+} satisfies Record<string, RouteDefinition>
 
-const allAlignRoutes = _.values(routeDefinitionsLookup)
+const allAlignRoutes = _.values(routes)
 
 export const router = createBrowserRouter([
   ...allAlignRoutes,
