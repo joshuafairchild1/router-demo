@@ -79,7 +79,10 @@ export function DefaultApplicationScreen<T extends RouteDefinition>(props: Props
         </SidePanel>
       : undefined}
     // header (?), footer, and site notice are the same for all screens, no overrides
-    header={<div>Static header</div>}
+    header={<div>
+      Static header
+      <SimpleBreadcrumbs route={props.route}/>
+    </div>}
     footer={<div>Static footer</div>}
     siteNotice={<div>Static site notice</div>}
   />
@@ -90,5 +93,18 @@ function DefaultNavigationContent() {
     <p>Default Navigation Bar</p>
     <p><Link to="/">Home</Link></p>
     <p><Link to="/template">Templates</Link></p>
+  </>
+}
+
+function SimpleBreadcrumbs({ route: { parent } }: { route: RouteDefinition }) {
+  if (!parent) {
+    return null
+  }
+  return <>
+    &nbsp;|&nbsp;
+    <Link to={parent.path}>
+      {parent.breadcrumbLabel}
+    </Link>
+    {parent.parent && <SimpleBreadcrumbs route={parent.parent}/>}
   </>
 }
