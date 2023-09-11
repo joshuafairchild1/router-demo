@@ -1,21 +1,19 @@
 import React, { memo, PropsWithChildren } from 'react'
 
 type SidePanelProps = PropsWithChildren<{
-  setSidePanelIsOpen: (val: boolean) => void
   sidePanelIsOpen: boolean
+  closeSidePanel: VoidFunction
 }>
 
 export const SidePanel = memo(function NavBar(props: SidePanelProps) {
-  return <div style={{
-    display: 'flex',
-    justifyContent: 'space-between',
+  return (props.sidePanelIsOpen && <div style={{
     height: '34em',
     backgroundColor: 'violet',
   }}
   >
-    <div onClick={() => props.setSidePanelIsOpen(!props.sidePanelIsOpen)} title="Close">
+    <div onClick={props.closeSidePanel} title="Close">
       X
     </div>
     {props.children}
-  </div>
+  </div>) || null
 })
