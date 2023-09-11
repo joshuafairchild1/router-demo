@@ -1,21 +1,35 @@
-import { RouteDefinition } from '../routes/router'
 import { Link } from 'react-router-dom'
 import React from 'react'
+import { Breadcrumb, breadcrumbForRoute } from '../routes/breadcrumbs'
+import { RouteDefinition } from '../routes/RouteDefinition'
 
 type Props = {
   route: RouteDefinition
 }
 
 export function SimpleBreadcrumbs(props: Props) {
-  const { route: { parent } } = props
-  if (!parent) {
+  const breadcrumb = breadcrumbForRoute(props.route)
+  if (!breadcrumb) {
     return null
   }
+  const parentBreadcrumb = breadcrumb.parent && breadcrumbForRoute(breadcrumb.parent)
   return <>
-    &nbsp;|&nbsp;
-    <Link to={parent.path}>
-      {parent.breadcrumbLabel}
+    {parentBreadcrumb && <NextBreadcrumb breadcrumb={parentBreadcrumb}/>}
+    <span>{breadcrumb.label}</span>
+  </>
+}
+
+function NextBreadcrumb(props: { breadcrumb: Breadcrumb }) {
+  const { breadcrumb } = props
+  const parentBreadcrumb = breadcrumb.parent && breadcrumbForRoute(breadcrumb.parent)
+
+  return <>
+    {parentBreadcrumb && <NextBreadcrumb breadcrumb={parentBreadcrumb}/>}
+    <Link to={breadcrumb.route.path}>
+      {breadcrumb.label}
     </Link>
-    {parent.parent && <SimpleBreadcrumbs route={parent.parent}/>}
+    &nbsp;
+    {'>'}
+    &nbsp;
   </>
 }

@@ -1,17 +1,17 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import React from 'react'
-import { routes } from '../routes/router'
 import { DefaultLayout } from '../layout/DefaultLayout'
 import { NavigationBar, NavigationControl, SiteControl } from '../layout/NavigationBar'
 import { DefaultNavigationContent } from '../nav/DefaultNavigationContent'
 import { SidePanel } from '../layout/SidePanel'
-import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
 import { useSidebarNav } from '../nav/useSidebarNav'
 import { useSidePanelBehavior } from './useSidePanelBehavior'
+import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
+import { RouteProps } from '../routes/RouteProps'
 
 const sidePanelNames = ['milestone'] as const
 
-export function TemplateDetailScreen() {
+export function TemplateDetailScreen(props: RouteProps) {
   const params = useParams()
   const location = useLocation()
   const [sidebarNavOpen, setSidebarNavOpen] = useSidebarNav()
@@ -48,10 +48,7 @@ export function TemplateDetailScreen() {
         <SidePanel sidePanelIsOpen={sidePanel.hasSidePanel} closeSidePanel={sidePanel.closeSidePanel}>
             <p>Template Detail Panel</p>
         </SidePanel>}
-    header={<div>
-      App header
-      <SimpleBreadcrumbs route={routes.templateDetail}/>
-    </div>}
+    header={<SimpleBreadcrumbs route={props.route}/>}
     footer={<div>App footer</div>}
     siteNotice={<div>Site notice</div>}
   />

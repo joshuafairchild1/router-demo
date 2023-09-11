@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom'
 import React from 'react'
 import { DefaultLayout } from '../layout/DefaultLayout'
 import { NavigationBar, NavigationControl, SiteControl } from '../layout/NavigationBar'
-import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
 import { useSidebarNav } from '../nav/useSidebarNav'
-import { routes } from '../routes/router'
+import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
+import { RouteProps } from '../routes/RouteProps'
 
-export function TemplateDashboardScreen() {
+export function TemplateDashboardScreen(props: RouteProps) {
   const [sidebarNavOpen, setSidebarNavOpen] = useSidebarNav()
 
   return <DefaultLayout
@@ -29,10 +29,7 @@ export function TemplateDashboardScreen() {
       navigationControl: <NavigationControl expanded={sidebarNavOpen} toggle={setSidebarNavOpen}/>,
     }}
     sidePanelIsOpen={false}
-    header={<div>
-      App header
-      <SimpleBreadcrumbs route={routes.templates}/>
-    </div>}
+    header={<SimpleBreadcrumbs route={props.route}/>}
     footer={<div>App footer</div>}
     siteNotice={<div>Site notice</div>}
   />
