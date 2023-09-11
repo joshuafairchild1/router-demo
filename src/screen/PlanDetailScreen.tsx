@@ -5,7 +5,7 @@ import { SidePanel } from '../layout/SidePanel'
 import { DefaultLayout } from '../layout/DefaultLayout'
 import { useSidebarNav } from '../nav/useSidebarNav'
 import { DefaultNavigationContent } from '../nav/DefaultNavigationContent'
-import { useSidePanelBehavior } from './useSidePanelBehavior'
+import { QUERY_PARAM_PANEL, useSidePanelBehavior } from './useSidePanelBehavior'
 import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
 import { RouteProps } from '../routes/RouteProps'
 
@@ -26,8 +26,8 @@ export function PlanDetailScreen(props: RouteProps) {
         <pre>{JSON.stringify(params, null, 2)}</pre>
         {sidePanelNames.map((name) => {
           const searchParams = new URLSearchParams(location.search)
-          searchParams.delete('panel')
-          searchParams.append('panel', name)
+          searchParams.delete(QUERY_PARAM_PANEL)
+          searchParams.append(QUERY_PARAM_PANEL, name)
           return <p key={name}>
             <Link to={`${location.pathname}?${searchParams}`}>
               Open {name} side panel
