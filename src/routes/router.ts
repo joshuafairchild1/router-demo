@@ -4,63 +4,68 @@ import { TemplateDashboardScreen } from '../screen/TemplateDashboardScreen'
 import { PlanDetailScreen } from '../screen/PlanDetailScreen'
 import { TemplateDetailScreen } from '../screen/TemplateDetailScreen'
 import { createBrowserRouter, RouteObject } from 'react-router-dom'
-import { createElement } from 'react'
+import { ComponentType, createElement, ReactElement } from 'react'
 import _ from 'lodash'
 import { createRouteAlias } from './createRouteAlias'
 
 export type RouteName = keyof typeof routes
 
-// TODO: this into a class that exists independently of RouteObject, and have a method or some
-//  other function that converts from a `RouteDefinition` to a `RouteObject`.
-//  Decoupling our implementation from the react-router-dom implementation seems like a good idea in general.
-export type RouteDefinition =
-  // making `path` and `Component` required for our implementation, and omitting `element` (we can adjust this if
-  // we find a use case for `element`)
-  Omit<RouteObject, 'path' | 'Component' | 'element'>
-  & Required<Pick<RouteObject, 'path' | 'Component'>>
-  & {
+export class RouteDefinition {
+  constructor(
+    /**
+     * The path that this route is available at.
+     */
+    readonly path: string,
     /**
      * Human-readable label used to identify this route in a breadcrumb UI.
+     *
+     * TODO: explore externalizing this and {@link parent} into a separate "breadcrumb hierarchy"
+     *  constant, because breadcrumbs technically follow their own hierarchy (right?).
      */
-    breadcrumbLabel: string
+    readonly breadcrumbLabel: string,
     /**
-     * Names of panels that are supported by this route.
+     * The component that renders at this route.
      */
-    supportedPanels?: ReadonlyArray<string>
+    readonly Component: ComponentType,
     /**
-     * The route that this route is a child of. This can be used to construct a breadcrumb UI..
+     * The route that this route is a child of. This is used to construct a breadcrumb UI.
      */
-    parent?: RouteDefinition
+    readonly parent: RouteDefinition | null = null,
+    /**
+     * The component that renders when an error occurs while rendering this route.
+     */
+    readonly errorElement: ReactElement | null = null,
+  ) {
   }
-
-const plansRoute = {
-  path: '/',
-  breadcrumbLabel: 'Plans',
-  Component: PlanDashboardScreen,
-  errorElement: createElement(ErrorPage),
 }
 
-const templatesRoute = {
-  path: '/template',
-  breadcrumbLabel: 'Templates',
-  Component: TemplateDashboardScreen,
-}
+const plansRoute = new RouteDefinition(
+  '/',
+  'Plans',
+  PlanDashboardScreen,
+  null,
+  createElement(ErrorPage),
+)
 
-const templateDetailRoute = {
-  path: '/template/:templateId',
-  breadcrumbLabel: 'Template',
-  Component: TemplateDetailScreen,
-  supportedPanels: ['milestone'],
-  parent: templatesRoute,
-}
+const templatesRoute = new RouteDefinition(
+  '/template',
+  'Templates',
+  TemplateDashboardScreen,
+)
 
-const planDetailRoute = {
-  path: '/plan/:planId',
-  breadcrumbLabel: 'Plan',
-  Component: PlanDetailScreen,
-  supportedPanels: ['milestone', 'profile'],
-  parent: plansRoute,
-}
+const templateDetailRoute = new RouteDefinition(
+  '/template/:templateId',
+  'Template',
+  TemplateDetailScreen,
+  templatesRoute,
+)
+
+const planDetailRoute = new RouteDefinition(
+  '/plan/:planId',
+  'Plan',
+  PlanDetailScreen,
+  plansRoute,
+)
 
 export const routes = {
   plans: plansRoute,
@@ -69,9 +74,13 @@ export const routes = {
   templateDetail: templateDetailRoute,
 } satisfies Record<string, RouteDefinition>
 
-const allAlignRoutes = _.values(routes)
+const allAlignRoutes = _.values(routes).map(forReactRouter)
 
 export const router = createBrowserRouter([
   ...allAlignRoutes,
-  createRouteAlias('/align', allAlignRoutes)
+  createRouteAlias('/align', allAlignRoutes),
 ])
+
+function forReactRouter(route: RouteDefinition): RouteObject {
+  return _.pick(route, ['path', 'Component', 'errorElement'])
+}
