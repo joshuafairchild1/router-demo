@@ -1,5 +1,5 @@
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
-import React, { ReactElement, useCallback, useMemo } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import React, { ReactElement } from 'react'
 import { routes } from '../routes/router'
 import { NavigationBar, NavigationControl, SiteControl } from '../layout/NavigationBar'
 import { SidePanel } from '../layout/SidePanel'
@@ -7,6 +7,7 @@ import { DefaultLayout } from '../layout/DefaultLayout'
 import { useSidebarNav } from '../nav/useSidebarNav'
 import { DefaultNavigationContent } from '../nav/DefaultNavigationContent'
 import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
+import { useSidePanelBehavior } from './useSidePanelBehavior'
 
 const sidePanelNames = ['profile', 'milestone', 'edit', 'share'] as const
 
@@ -15,19 +16,8 @@ type SidePanelName = typeof sidePanelNames[number]
 export function PlanDetailScreen() {
   const params = useParams()
   const location = useLocation()
-  const [searchParams, setSearchParams] = useSearchParams()
   const [sidebarNavOpen, setSidebarNavOpen] = useSidebarNav()
-  const openSidePanelName = useMemo(function computeOpenPanel() {
-    return sidePanelNames.find((name) => searchParams.get('panel') === name) || null
-  }, [searchParams])
-  const hasSidePanel = !!openSidePanelName
-  const closeSidePanel = useCallback(function closeSidePanel() {
-    setSearchParams((current) => {
-      const next = new URLSearchParams(current)
-      next.delete('panel')
-      return next
-    })
-  }, [setSearchParams])
+  const sidePanel = useSidePanelBehavior(sidePanelNames)
 
   return <DefaultLayout
     main={
@@ -38,7 +28,7 @@ export function PlanDetailScreen() {
           const searchParams = new URLSearchParams(location.search)
           searchParams.delete('panel')
           searchParams.append('panel', name)
-          return <p>
+          return <p key={name}>
             <Link to={`${location.pathname}?${searchParams}`}>
               Open {name} side panel
             </Link>
@@ -54,11 +44,11 @@ export function PlanDetailScreen() {
       siteControl: <SiteControl/>,
       navigationControl: <NavigationControl expanded={sidebarNavOpen} toggle={setSidebarNavOpen}/>,
     }}
-    sidePanelIsOpen={hasSidePanel}
-    sidePanel={openSidePanelName &&
-        <SidePanel sidePanelIsOpen={hasSidePanel} closeSidePanel={closeSidePanel}>
+    sidePanelIsOpen={sidePanel.hasSidePanel}
+    sidePanel={sidePanel.openSidePanelName &&
+        <SidePanel sidePanelIsOpen={sidePanel.hasSidePanel} closeSidePanel={sidePanel.closeSidePanel}>
             <p>Plan Detail Side Panel</p>
-            <div>{selectSidePanelContent(openSidePanelName)}</div>
+            <div>{selectSidePanelContent(sidePanel.openSidePanelName)}</div>
         </SidePanel>}
     header={<div>
       App Header

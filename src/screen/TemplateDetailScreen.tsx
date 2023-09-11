@@ -1,5 +1,5 @@
-import { useParams, useSearchParams } from 'react-router-dom'
-import React, { useCallback, useMemo } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import React from 'react'
 import { routes } from '../routes/router'
 import { DefaultLayout } from '../layout/DefaultLayout'
 import { NavigationBar, NavigationControl, SiteControl } from '../layout/NavigationBar'
@@ -7,30 +7,31 @@ import { DefaultNavigationContent } from '../nav/DefaultNavigationContent'
 import { SidePanel } from '../layout/SidePanel'
 import { SimpleBreadcrumbs } from '../nav/SimpleBreadcrumbs'
 import { useSidebarNav } from '../nav/useSidebarNav'
+import { useSidePanelBehavior } from './useSidePanelBehavior'
 
 const sidePanelNames = ['milestone'] as const
 
 export function TemplateDetailScreen() {
   const params = useParams()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
   const [sidebarNavOpen, setSidebarNavOpen] = useSidebarNav()
-  const openSidePanelName = useMemo(function computeOpenPanel() {
-    return sidePanelNames.find((name) => !!searchParams.get(name)) || null
-  }, [searchParams])
-  const hasSidePanel = !!openSidePanelName
-  const closeSidePanel = useCallback(function closeSidePanel() {
-    setSearchParams((current) => {
-      const next = new URLSearchParams(current)
-      sidePanelNames.forEach((name) => next.delete(name))
-      return next
-    })
-  }, [setSearchParams])
+  const sidePanel = useSidePanelBehavior(sidePanelNames)
 
   return <DefaultLayout
     main={
       <div>
         <p>Template Detail</p>
         <pre>{JSON.stringify(params, null, 2)}</pre>
+        {sidePanelNames.map((name) => {
+          const searchParams = new URLSearchParams(location.search)
+          searchParams.delete('panel')
+          searchParams.append('panel', name)
+          return <p key={name}>
+            <Link to={`${location.pathname}?${searchParams}`}>
+              Open {name} side panel
+            </Link>
+          </p>
+        })}
       </div>
     }
     isNavOpen={sidebarNavOpen}
@@ -41,10 +42,10 @@ export function TemplateDetailScreen() {
       siteControl: <SiteControl/>,
       navigationControl: <NavigationControl expanded={sidebarNavOpen} toggle={setSidebarNavOpen}/>,
     }}
-    sidePanelIsOpen={hasSidePanel}
+    sidePanelIsOpen={sidePanel.hasSidePanel}
     sidePanel={
-      openSidePanelName &&
-        <SidePanel sidePanelIsOpen={hasSidePanel} closeSidePanel={closeSidePanel}>
+      sidePanel.openSidePanelName &&
+        <SidePanel sidePanelIsOpen={sidePanel.hasSidePanel} closeSidePanel={sidePanel.closeSidePanel}>
             <p>Template Detail Panel</p>
         </SidePanel>}
     header={<div>
